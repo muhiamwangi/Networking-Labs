@@ -1,0 +1,143 @@
+SSH: Securing a remote switch with password encryption and SSH.
+Lab Devices: 1PC, 1SW
+........................
+PC1 --> ip 10.10.10.10
+........................
+
+SW1
+
+en
+conf t
+vlan 1
+name VLAN1
+ex
+
+int vlan 1
+ip add 10.10.10.2 255.255.255.0
+no shut
+ex
+
+...........................
+SW1 Telnet Configurations
+...........................
+
+conf t
+service password-encryption   :ENCRYPTS Plain-text passwords
+enable secret muhia@20121
+username muhia secret dOhc09lhi8#$%^9@2376p
+access-list 1 permit host 10.10.10.10
+line vty 0 15
+login local
+exec-timeout 5 0
+transport input telnet
+access-class 1 in
+end
+
+....................................
+Verify Telnet Configuration from PC1
+....................................
+•	ping 10.10.10.2
+•	telnet 10.10.10.2
+    show run vshd  --->Invalid
+	
+
+.......................
+SW1 SSH Configurations
+.......................
+
+enable
+show version
+sh ip ssh
+conf t
+hostname SW1
+ip domain name muhiatitlab.com
+crypto key generate rsa
+ 2048
+
+en
+conf t
+enable secret muhia@2021
+username muhia secret $1$mERr$g1Jcz5Auj2RxoKnD8eU3j/ 
+
+access-list 1 permit host 10.10.10.10
+ip ssh version 2 
+line vty 0 15 
+login local  --> VTY lines to check the local username db for login credentials and to only allow SSH for remote access
+exec-timeout 5 0 
+transport input ssh 
+no password cisco --> Remove the existing vty line password from Telnet
+access-class 1 in 
+end
+
+..................................
+Verify SSH Configuration from PC1
+..................................
+
+ssh -l muhia 10.10.10.2 
+        $1$mERr$g1Jcz5Auj2RxoKnD8eU3j/
+		muhia@2021
+		
+sh ip ssh
+
+
+........................................................................................................................................................................
+
+SWitch
+
+en
+conf t
+vlan 1
+name VLAN1
+ex
+
+int vlan 1
+ip add 10.10.10.2 255.255.255.0
+no shut
+ex
+
+conf t
+service password-encryption
+enable secret muhia@20121
+username muhia secret dOhc09lhi8#$%^9@2376p
+access-list 1 permit host 10.10.10.10
+line vty 0 15
+login local
+exec-timeout 5 0
+transport input telnet
+access-class 1 in
+end
+
+enable
+show version
+sh ip ssh
+conf t
+hostname SW1
+ip domain name muhiatitlab.com
+crypto key generate rsa
+ 2048
+
+conf t
+enable secret muhia@2021
+username muhia secret $1$mERr$g1Jcz5Auj2RxoKnD8eU3j/ 
+
+access-list 1 permit host 10.10.10.10
+ip ssh version 2 
+line vty 0 15 
+login local 
+exec-timeout 5 0 
+transport input ssh 
+no password cisco 
+access-class 1 in 
+end
+sh ip ssh
+
+..............................................................................................................
+PC1
+
+ping 10.10.10.2
+telnet 10.10.10.2
+
+ssh -l muhia 10.10.10.2 
+        $1$mERr$g1Jcz5Auj2RxoKnD8eU3j/
+		muhia@2021
+		
