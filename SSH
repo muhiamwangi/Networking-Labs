@@ -38,9 +38,7 @@ Verify Telnet Configuration from PC1
 ....................................
 •	ping 10.10.10.2
 •	telnet 10.10.10.2
-    show run vshd  --->Invalid
-	
-
+   
 .......................
 SW1 SSH Configurations
 .......................
