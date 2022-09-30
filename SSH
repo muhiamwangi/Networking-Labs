@@ -63,7 +63,7 @@ line vty 0 15
 login local  --> VTY lines to check the local username db for login credentials and to only allow SSH for remote access
 exec-timeout 5 0 
 transport input ssh 
-no password cisco --> Remove the existing vty line password from Telnet
+no password dOhc09lhi8#$%^9@2376p  --> Remove the existing vty line password from Telnet
 access-class 1 in 
 end
 
@@ -75,7 +75,6 @@ ssh -l muhia 10.10.10.2
         $1$mERr$g1Jcz5Auj2RxoKnD8eU3j/
 		muhia@2021
 		
-sh ip ssh
 
 ..............
 SWitch
@@ -122,7 +121,7 @@ line vty 0 15
 login local 
 exec-timeout 5 0 
 transport input ssh 
-no password cisco 
+no password dOhc09lhi8#$%^9@2376p
 access-class 1 in 
 end
 sh ip ssh
