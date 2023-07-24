@@ -1,0 +1,73 @@
+en
+conf t
+
+hostname LAB-EDGE-RTR
+enable secret cisco
+
+banner motd $
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+UNAUTHORIZED ACCESS IS PROHIBITED
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+$
+
+line con 0
+password cisco
+login
+logging synchronous
+exec-timeout 30 0
+exit
+
+line vty 0 4 
+password cisco
+login
+logging synchronous
+exec-timeout 30 0
+exit
+
+line aux 0 
+password cisco
+login
+logging synchronous
+exec-timeout 30 0
+exit
+
+!
+
+username muhia algorithm-type scrypt secret cisco
+username levi algorithm-type scrypt secret cisco
+
+aaa new-model                                                                                                                                  
+aaa authentication login default local-case enable                               
+aaa authentication login SSH-LOGIN local-case                                 
+
+line vty 0 4
+login authentication SSH-LOGIN	                                                           
+aaa local authentication attempts max-fail 4                                    
+end
+
+show aaa local user lockout
+clear aaa local user lockout                                                       
+show aaa user?
+
+!
+
+
+enable 
+conf t
+int eth 0/2
+description LINK TO INTERNET
+ip addr 196.13.121.70 255.255.255.0
+no shut
+ex
+
+
+int eth 0/0
+description LINK TO LAN
+ip addr 192.168.1.1 255.255.255.0
+no shutdown
+exit
+
+ip route 0.0.0.0 0.0.0.0 196.13.121.71        
+                                 
+								 
+
