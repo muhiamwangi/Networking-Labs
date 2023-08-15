@@ -1,0 +1,52 @@
+Tasks
+
+1. Configure IPsec in transport mode to protect a GRE Tunnel
+   ie Encrypt existing GRE Tunnel
+2. Configure ISAKMP using a preshared key
+3. Configure Transform set
+4. Enable Tunnel Protection on existing GRe Tunnel
+
+
+R1
+
+conf t
+authentication pre-share  //preshared key/cryptographic certs
+hash sha256
+encryption aes
+group 14                                            //diffie hellman group number
+crypto isakmp key  Pluralsight address 10.10.30.2    //shared secret+ addr of the peer
+crypto ipsec transform-set transformset esp-aes esp-sha-hmac  //aes-encrpting pyload
+                                                              //sha-hmac: authentication+ data integrity
+mode transport     //IPsec TRANSPORT MODE
+crypto ipsec profile myprofile
+set transform-set transformset
+int tun12
+tunnel protection ipsec profile myprofile
+
+
+R2
+
+conf t
+crypto isakmp policy 1
+authentication pre-share  //preshared key/cryptographic certs
+hash sha256
+encryption aes
+group 14                                            //diffie hellman group number
+crypto isakmp key  Pluralsight address 10.10.10.1    //shared secret+ addr of the peer
+crypto ipsec transform-set transformset esp-aes esp-sha-hmac  //aes-encrpting pyload
+                                                              //sha-hmac: authentication+ data integrity
+mode transport     //IPsec TRANSPORT MODE
+crypto ipsec profile myprofile
+set transform-set transformset
+int tun12
+tunnel protection ipsec profile myprofile
+
+sh crypto isakmp sa
+sh crypto ipsec sa | i interface |10.10.|Transport|bound esp
+sh crypto ipsec sa | i caps
+ping 12.12.12.1 so tun12
+sh crypto ipsec sa | i caps
+ping 2001:db8:12::1 so tun12
+sh  int tun12 | i GRE|IPS
+ 
+
