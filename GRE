@@ -1,0 +1,148 @@
+//UNDERLAY Network
+
+enable 
+config t
+hostname R1
+int gi0/0
+ip add 10.10.10.1 255.255.255.0
+no shut
+
+router bgp 65001
+neighbor 10.10.10.10 remote-as 65555
+exit
+end
+wr
+
+..............
+enable
+conf t
+hostname ISP
+
+int gi0/0
+ip add 10.10.10.10 255.255.255.0
+no shut
+
+int gi0/1
+ip add 10.10.30.10 255.255.255.0
+no shut
+
+router bgp 65555
+
+network 10.10.10.0 mask 255.255.255.0
+network 10.10.30.0 mask 255.255.255.0
+
+neighbor 10.10.10.1 remote-as 65001
+neighbor 10.10.30.2 remote-as 65001
+
+end
+wr
+
+.......................................
+enable
+conf t
+hostname R2
+
+int gi0/0
+ip add 10.10.30.2  255.255.255.0
+no shut
+
+router bgp 65001
+neighbor 10.10.30.10 remote-as 65555
+exit
+
+end
+wr
+
+ping 10.10.10.1
+show ip bgp
+
+//Overlay GRE
+
+
+R1
+
+conf t
+ipv6 unicast-routing
+int tunnel12
+ip address 12.12.12.1 255.255.255.252
+
+ipv6 address 2001:db8:12::1/64
+tunnel source 10.10.10.1
+tunnel destination 10.10.30.2
+tunnel mode gre ip
+end 
+wr
+
+sh ip route | i 12.
+sh ipv6 route | b 2001
+
+..............
+R2
+
+conf t
+ipv6 unicast-routing
+int tunnel12
+ip address 12.12.12.2 255.255.255.252
+
+ipv6 address 2001:db8:12::2/64
+tunnel source 10.10.30.2
+tunnel destination 10.10.10.1
+tunnel mode gre ip
+end
+wr
+
+sh ip route | i 12.
+sh ipv6  route | b 2001
+
+ping 12.12.12.1
+ping 2001:db8:12::1/64
+
+.............................
+.............................
+
+Configuring OSPF v2
+
+R1
+
+conf t
+router ospf 1
+network 12.12.12.1 0.0.0.0 area 0
+end
+
+
+R2
+
+conf t
+router ospf 1
+network 12.12.12.2 0.0.0.0 area 0
+network 2.2.2.2 0.0.0.0 area 0
+
+int lo0
+ip add 2.2.2.2 255.255.255.255 
+end
+
+R1
+
+sh ip route  | b 2.0
+ping 2.2.2.2 source tun12
+
+......................................
+......................................
+Configuring OSPF v3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
