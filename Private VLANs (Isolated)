@@ -44,7 +44,7 @@ show vlan private-vlan
 show cdp neigh   //Show which port is connected where
 
 
-int g0/0   //ASSOCATING PORTS TO THE PRIVATE VLAN
+int g0/0                        //associating interface to PROMISCUOUS port
 switchport mode?
 switchport mode private-vlan?
 switchport mode private-vlan promiscuous           //configure PROMISCUOUS port
