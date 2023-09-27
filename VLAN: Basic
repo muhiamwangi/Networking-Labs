@@ -1,0 +1,34 @@
+enable 
+
+conf t
+vlan 100
+name DATA
+state active
+end
+
+conf t
+vlan 120
+name VOICE
+state active
+end
+
+show vlan
+
+conf t
+int range g0/0-3
+do sh int g0/0 switchport              //Show interfaces' L2 properties    
+switchport mode access                 //Access vs Trunk mode
+switchport access vlan 100             //Making the interfaces members of Data VLAN 100
+do sh int g0/0 switchport              //Shows an interfaces' L2 properties
+no shut
+do show vlan
+
+int range g0/0-3                  
+switchport mode access
+switchport voice vlan 120              //Making the interfaces members of Voice VLAN 120    
+no shut
+end
+
+show vlan
+show int g0/1 switchport              //Multi-VLAN access port can be a member of only the access and voice VLANS
+
