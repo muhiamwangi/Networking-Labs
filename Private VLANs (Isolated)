@@ -1,0 +1,89 @@
+SW 1: Switch
+SW 3, SW 4: (2 servers)-192.168.23.2, 192.168.23.3
+SW 4: Router 192.168.23.4
+
+
+conf t
+int g0/0
+no switchport
+do sh int g0/0 switchport
+ip add 192.168.23.2 255.255.255.0
+no shut
+do sh ip int br
+
+
+conf t
+int g0/1
+no switchport
+do sh int g0/1 switchport
+ip add 192.168.23.3 255.255.255.0
+no shut
+do sh ip int br
+
+
+conf t
+int g0/3
+no switchport
+do sh int g0/3 switchport
+ip add 192.168.23.4 255.255.255.0
+no shut
+do sh ip int br
+
+
+vlan 223          //secondary vlan
+private-vlan isolated 
+exit
+show vlan private-vlan
+
+vlan 200                  //private vlan
+private-vlan primary
+private-vlan association 223    //associating primary vlan to secondary vlan
+exit
+show vlan private-vlan
+
+show cdp neigh   //Show which port is connected where
+
+
+int g0/0   //ASSOCATING PORTS TO THE PRIVATE VLAN
+switchport mode?
+switchport mode private-vlan?
+switchport mode private-vlan promiscuous           //configure PROMISCUOUS port
+
+
+switchport private-vlan mapping? //associate this promiscuous port with the 2 vlans(primary&secondary VLANs)
+                                 //Primary for traffic from Default gateway to Host
+								 //Secondary for traffuc from host to Gateway
+
+switchport private-vlan mapping 200 233
+								 
+int g0/0, g0/3                             //setting up isolated HOST PORTS 
+
+!switchport mode private-vlan host-association <primary-VLAN, secondary-VLAN>
+switchport mode private-vlan host-association 200 233
+do show vlan private-vlan
+exit
+
+
+VERIFY CONFIGURATIONS:
+SW2
+
+ping 192.168.23.3 repeat 3 timeout 1
+sh ip arp
+ping 192.168.23.4 repeat 5 timeout 1
+sh ip arp
+
+
+SW3
+
+ping 192.168.23.2 repeat 3 timeout 1
+sh ip arp
+ping 192.168.23.4 repeat 5 timeout 1
+sh ip arp
+
+
+SW4
+
+ping 192.168.23.2 repeat 4 timeout 1
+sh ip arp
+ping 192.168.23.3 repeat 5 timeout 1
+sh ip arp
