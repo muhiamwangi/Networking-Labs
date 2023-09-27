@@ -34,7 +34,7 @@ ip add 192.168.23.4 255.255.255.0
 no shut
 do sh ip int br
 
-SW1 -Switch
+SW1 -SWITCH
 en
 conf t
 
@@ -59,25 +59,20 @@ int range g0/0, g0/3
 switchport mode private-vlan host     //HOST Ports              
 switchport private-vlan host-association 200 233 
 do show vlan private-vlan
-
 exit
 
-
 VERIFY CONFIGURATIONS:
-
 SW2
 ping 192.168.23.3 repeat 3 timeout 1
 sh ip arp
 ping 192.168.23.4 repeat 5 timeout 1
 sh ip arp
 
-
 SW3
 ping 192.168.23.2 repeat 3 timeout 1
 sh ip arp
 ping 192.168.23.4 repeat 5 timeout 1
 sh ip arp
-
 
 SW4
 ping 192.168.23.2 repeat 4 timeout 1
