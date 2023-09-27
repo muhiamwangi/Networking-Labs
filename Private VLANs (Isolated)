@@ -34,16 +34,16 @@ ip add 192.168.23.4 255.255.255.0
 no shut
 do sh ip int br
 
-SW1 -SWITCH
+SW1 -Switch
 en
 conf t
 
-vlan 223      //Secondary Private VLAN
+vlan 223    //Secondary Private VLAN
 private-vlan isolated 
 exit
 do show vlan private-vlan
 
-vlan 200        //Primary Private VLAN
+vlan 200    //Primary Private VLAN
 private-vlan primary
 
 private-vlan association 223    
