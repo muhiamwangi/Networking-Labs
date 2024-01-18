@@ -1,0 +1,286 @@
+…………………………………
+R1
+
+en
+conf t
+
+no ip domain lookup
+hostname R1
+line con 0
+exec-timeout 0 0
+logging synchronous
+exit
+banner motd #R1. INTER-VLAN routing lab#
+
+conf t
+int gi0/1
+ip add 10.1.3.1 255.255.255.0
+ipv6 address fe80::1:2 link-local
+ipv6 add 2001:db8:acad:1013::1/64
+no shut
+exit
+
+int gi0/0
+ip add 10.1.13.1 255.255.255.0
+ipv6 add fe80::1:1 link-local
+ipv6 add 2001:db8:acad:10d1::1/64
+no shut
+exit
+
+ip route 10.2.0.0 255.255.0.0 10.1.13.13
+ipv6 route 2001:db8:acad:1050::/64 2001:db8:acad:10d1::d1 
+ipv6 route 2001:db8:acad:1060::/64 2001:db8:acad:10d1::d1
+
+ip route 0.0.0.0 0.0.0.0 10.1.3.3 
+ipv6 route ::/0 2001:db8:acad:1013::3
+
+end
+wr
+
+.....................
+D1
+
+en
+conf t
+
+no ip domain lookup
+hostname D1
+line con 0
+exec-timeout 0 0
+logging synchronous
+exit
+banner motd #SW D1 . INTER-VLAN routing  lab#
+exit
+
+conf t
+ip routing
+ipv6 unicast-routing
+
+vlan 50
+name Group 50
+exit
+
+vlan 60
+name  Group 60
+exit
+
+int gi0/1
+switchport mode access
+switchport access vlan 50
+no shut
+exit
+
+int gi0/2
+switchport mode access 
+switchport access vlan 60
+no shut
+exit
+
+int g0/0
+no switchport
+ip address 10.1.13.13 255.255.255.0
+ipv6 address fe80::d1:1 link-local
+ipv6 address 2001:db8:acad:10d1::d1/64
+no shutdown
+exit
+
+ip route 0.0.0.0 0.0.0.0 10.1.13.1
+ipv6 route ::/0 2001:db8:acad:10d1::1
+
+int vlan 50
+ip add 10.2.50.1 255.255.255.0
+ipv6 add fe80::d1:2 link-local 
+ipv6 add 2001:db8:acad:1050::d1/64
+no shut
+exit
+
+int vlan 60
+ip add 10.2.60.1 255.255.255.0
+ipv6 add fe80::d1:2 link-local
+ipv6 add 2001:db8:acad:1060::d1/64
+no shut
+exit
+
+end
+wr
+
+.................................................................
+PC1
+
+en
+conf t
+
+hostname PC1
+no ip routing
+
+int gi0/0
+no shut
+
+ip add 10.2.50.50 255.255.255.0
+ipv6 add 2001:db8:acad:1050::50/64 EUI-64
+
+exit
+end
+wr
+
+…………………………………….
+PC2
+
+en
+conf t
+
+hostname PC2
+no ip routing
+
+int gi0/0
+no shut
+ip add 10.2.60.50 255.255.255.0
+ipv6 add 2001:db8:acad:1060::50/64 EUI-64
+
+exit
+
+end
+wr
+…………………………………
+
+R3
+
+en
+conf t
+no ip domain lookup
+hostname R3
+line con 0
+exec-timeout 0 0
+logging synchronous
+exit
+banner motd #R3. INTER-VLAN routing lab#
+
+interface gi0/0
+ip address 10.1.3.3 255.255.255.0
+ipv6 address fe80::3:1 link-local
+ipv6 address 2001:db8:acad:1013::3/64
+no shutdown
+exit
+
+ip route 0.0.0.0 0.0.0.0 10.1.3.1
+ipv6 route ::/0 2001:db8:acad:1013::1
+ 
+interface g0/1
+no shutdown
+exit 
+ 
+interface g0/1.75
+encapsulation dot1q 75
+ip address 10.3.75.1 255.255.255.0
+ipv6 address fe80::3:2 link-local
+ipv6 address 2001:db8:acad:3075::1/64
+no shutdown
+exit
+
+interface g0/1.85
+encapsulation dot1q 85
+ip address 10.3.85.1 255.255.255.0
+ipv6 address fe80::3:3 link-local
+ipv6 address 2001:db8:acad:3085::1/64
+no shutdown
+exit
+
+interface g0/1.999
+encapsulation dot1q 999 native
+no shutdown
+exit
+
+end
+wr
+
+…………………………………
+D2
+
+en
+conf t
+
+no ip domain lookup
+hostname D2
+line con 0
+exec-timeout 0 0
+logging synchronous
+exit
+banner motd #SW D2. INTER-VLAN routing lab#
+exit
+
+conf t
+vlan 75
+name Group75
+exit
+
+vlan 85
+name Group85
+exit
+
+vlan 999
+name NativeVLAN
+exit
+
+int gi0/1
+switchport mode access
+switchport access vlan 75
+exit
+
+int gi0/2
+switchport mode access
+switchport access vlan 85
+exit
+
+interface gi0/0
+switchport trunk encapsulation dot1q
+switchport mode trunk
+switchport trunk native vlan 999 
+switchport trunk allowed vlan 75,85,999
+no shutdown
+exit
+
+!SVI 
+interface vlan75
+ip address 10.3.75.14 255.255.255.0
+ipv6 address fe80::d2:1 link-local
+ipv6 address 2001:db8:acad:3075::d2/64
+no shutdown
+exit
+
+end
+wr
+…………………………………
+PC3
+
+en
+conf t
+
+hostname PC3
+no ip routing
+
+int gi0/0
+no shut
+
+ip add 10.3.75.50 255.255.255.0
+ipv6 add 2001:db8:acad:3075::50/64 EUI-64
+
+exit
+end
+wr
+…………………………………
+PC4
+
+en
+conf t
+
+hostname PC4
+no ip routing
+
+int gi0/0
+no shut
+ip add 10.3.85.50 255.255.255.0
+ipv6 add 2001:db8:acad:3085::50/64 EUI-64
+
+exit
+end
+wr
