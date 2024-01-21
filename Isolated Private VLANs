@@ -1,0 +1,52 @@
+Configuring Secondary Isolated Private VLANs
+SRVS: SW-2 ,SW-3 
+srv reach rtr(SW4)
+
+Primary vlan
+Secondary isolated vlan
+
+Consider:
+-promiscuous port
+-host port
+........................................
+en
+conf t
+
+!secondary vlan
+vlan 223
+private-vlan isolate 
+
+!primary vlan
+vlan 200
+private-vlan ?
+private-vlan primary
+
+!binding the secondary vlan to the primary vlan
+
+private-vlan association?
+private-vlan association add vlan 223
+ex
+
+show private-vlan
+
+!associate ports to the private vlans
+
+!(A)set promiscuous port
+
+int fa0/20
+switchport mode private-vlan promiscuous
+switchport private-vlan?
+switchport private-vlan mapping ?
+switchport private-vlan mapping 200, 223
+
+!(B)set host port
+int range fa0/2, fa0/11
+switchport mode private-vlan host
+switchport private-vlan host-association ?
+switchport private-vlan host-association 200, 223
+do sh vlan private-vlan
+
+!Test by tring to ping
+
+ping 192.x.x.x repeat 3 timeout 1
+sh arp
