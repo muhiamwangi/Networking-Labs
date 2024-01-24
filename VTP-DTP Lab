@@ -1,0 +1,70 @@
+- Its a challange managing VLANs& trunks in a n/w as SWs increases. 
+- VTP allows n/w admin to automate management of VLANs. 
+- Automated trunk negotiation btwn n/w devices is managed by DTP
+- DTP is enabled by default on Catalyst 2960, 3560 SWs
+TASKs
+- Configure a VTP srv & VTP clients in the same VTP domain. 
+- Configure an extended VLAN on one of the switches, assign ports to VLANs 
+- Verify end-to-end connectivity within the same VLAN
+
+
+!VTP for VLANs propagation:
+..................................
+!SW2
+vtp version 2
+vtp domain CCNA
+vtp mode server
+vtp password cisco
+ex
+..................................
+!SW1
+vtp version 2
+vtp domain CCNA
+vtp mode client
+vtp password cisco
+ex
+..................................
+!SW3
+vtp version 2
+vtp domain CCNA
+vtp password cisco
+vtp mode client
+do show vtp status
+ex
+
+
+#do show vtp status
+..................................
+!DTP: Trunk negotiations
+
+1. Dynamic Trunk Links
+2. Static Trunk Links
+3. Access ports
+
+show int fa0/x switchport
+
+int fa0/x
+switchport mode dynamic desirable
+show interfaces trunk
+
+
+int fa0/x
+switchport mode trunk
+show interfaces trunk
+
+
+interface f0/x
+switchport mode access
+switchport access vlan x
+
+................................
+Extended VLANs& VTP
+
+- An extended VLAN is a VLAN between 1025 and 4096. 
+- Extended VLANs can't be managed with VTP, 
+- VTP must be configured in transparent mode
+
+#vtp mode transparent
+#conf t
+#vlan 200
+#name extendedVLAN
